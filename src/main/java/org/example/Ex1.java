@@ -14,7 +14,8 @@ public class Ex1
         GameState initialState;
         GameState goalState;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt")))
+        {
             // Read method and predicates
             method = reader.readLine();
             time = reader.readLine();
