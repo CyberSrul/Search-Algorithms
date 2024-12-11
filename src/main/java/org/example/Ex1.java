@@ -3,6 +3,7 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.function.BiFunction;
 
 public class Ex1
 {
@@ -33,6 +34,20 @@ public class Ex1
         System.out.println(initialState);
         System.out.println("Goal State:");
         System.out.println(goalState);
+
+        System.out.println("Running algorithm...");
+        Node solution = new A_star().run(initialState, goalState, false, (a, b) -> 1);
+
+        if (solution == null) System.out.println("No solution found.");
+        print_path(solution);
+    }
+
+    private static void print_path(Node solution)
+    {
+        if (solution == null) return;
+        print_path(solution.getPrevious());
+        System.out.println(solution);
+        System.out.println();
     }
 
     private static GameState loadState(BufferedReader reader) throws IOException
