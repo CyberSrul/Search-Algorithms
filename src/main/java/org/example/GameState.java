@@ -2,11 +2,17 @@ package org.example;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameState implements Node
 {
+    private static int builds = 0;
+    public static int getBuilds() { return builds; }
+    public static void clearBuilds() { builds = 0; }
+
     public static final int size = 3;
+    public static final Map<Character, Integer> costs = Map.of('B', 1, 'G', 3, 'R', 10);
 
     private final char[][] board;
     private int cost;
@@ -14,6 +20,7 @@ public class GameState implements Node
 
     public GameState(char[][] board)
     {
+        builds++;
         this.cost = 0;
         this.previous = null;
 
@@ -37,11 +44,34 @@ public class GameState implements Node
     @Override
     public void setPrevious(Node previous){ this.previous = (GameState) previous; }
 
-
     @Override
     public String toString()
     {
         return Arrays.stream(board).map(Arrays::toString).collect(Collectors.joining("\n"));
+    }
+
+    private String difference(GameState other)
+    {
+        int row1 = -1, col1 = -1, row2 = -1, col2 = -1;
+        for (int row = 0; row < size; row++)
+            for (int col = 0; col < size; col++)
+                if (this.board[row][col] != other.board[row][col])
+                {
+                    if (this.board[row][col] == '_') { row2 = row; col2 = col; }
+                    else { row1 = row; col1 = col; }
+                }
+
+        this.setCost(costs.get(this.board[row1][col1]) + other.getCost());
+
+        return "(" + (row2+1) + "," + (col2+1) + "):" + this.board[row1][col1] +  ":(" + (row1+1) + "," + (col1+1) + ")";
+    }
+
+    public void print_path()
+    {
+        if (this.getPrevious() == null) return ;
+        this.getPrevious().print_path();
+        System.out.print(this.difference(this.getPrevious()));
+        System.out.print("--");
     }
 
     @Override
@@ -108,9 +138,7 @@ public class GameState implements Node
                 neighbor.board[row][col] = neighbor.board[new_row][new_col];
                 neighbor.board[new_row][new_col] = temp;
 
-                if (state.board[new_row][new_col] == 'B') neighbor.cost = 1;
-                if (state.board[new_row][new_col] == 'G') neighbor.cost = 3;
-                if (state.board[new_row][new_col] == 'R') neighbor.cost = 9;
+                neighbor.setCost(costs.get(state.board[new_row][new_col]));
                 neighbor.setPrevious(state);
                 return neighbor;
             }
