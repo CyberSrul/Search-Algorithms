@@ -26,9 +26,13 @@ public class A_star implements Algorithm
             for (Node neighbour : next.neighbors())
             {
                 if (neighbour == null) continue;
-                if (expanded.contains(neighbour) || expanding.contains((neighbour))) continue;
-                queue.add(neighbour); expanding.add(neighbour);
+
                 neighbour.setCost(NewCost.apply(next, neighbour));
+
+                if (expanded.contains(neighbour) || expanding.contains((neighbour)))
+                    if (neighbour.compareTo(next) >= 0) continue;
+
+                queue.add(neighbour); expanding.add(neighbour);
             }
         }
 
