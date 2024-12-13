@@ -114,8 +114,8 @@ class GameStateTest
                 };
 
 
-        int[] costs1 = {3, 3, 1, 9, 1, 9};
-        int[] costs2 = {3, 9};
+        int[] costs1 = {3, 3, 1, 10, 1, 10};
+        int[] costs2 = {3, 10};
 
         int ind = 0;
         for (Node neighbour : this.state1.neighbors())

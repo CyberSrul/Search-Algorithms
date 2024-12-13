@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+
+
 public class GameState implements Node
 {
     private static int builds = 0;
@@ -17,6 +20,7 @@ public class GameState implements Node
     private final char[][] board;
     private int cost;
     private GameState previous;
+
 
     public GameState(char[][] board)
     {
@@ -35,6 +39,7 @@ public class GameState implements Node
             }
     }
 
+
     @Override
     public int getCost(){ return this.cost; }
     @Override
@@ -44,36 +49,46 @@ public class GameState implements Node
     @Override
     public void setPrevious(Node previous){ this.previous = (GameState) previous; }
 
+
     @Override
     public String toString()
     {
         return Arrays.stream(board).map(Arrays::toString).collect(Collectors.joining("\n"));
     }
 
-    private String difference(GameState other)
+    String getPath()
+    {
+        StringBuilder path = new StringBuilder();
+        BuildPath(path);
+        return path.toString();
+    }
+
+    private void BuildPath(StringBuilder path)
+    {
+        if (this.previous == null) return;
+        this.getPrevious().BuildPath(path);
+        path.append(this.difference());
+        path.append("--");
+    }
+
+    private String difference()
     {
         int row1 = -1, col1 = -1, row2 = -1, col2 = -1;
         for (int row = 0; row < size; row++)
             for (int col = 0; col < size; col++)
-                if (this.board[row][col] != other.board[row][col])
+                if (this.board[row][col] != this.previous.board[row][col])
                 {
                     if (this.board[row][col] == '_') { row2 = row; col2 = col; }
                     else { row1 = row; col1 = col; }
                 }
 
-        this.setCost(costs.get(this.board[row1][col1]) + other.getCost());
+        this.setCost(costs.get(this.board[row1][col1]) + this.previous.getCost());
 
         return "(" + (row2+1) + "," + (col2+1) + "):" + this.board[row1][col1] +  ":(" + (row1+1) + "," + (col1+1) + ")";
     }
 
-    public void print_path()
-    {
-        if (this.getPrevious() == null) return ;
-        this.getPrevious().print_path();
-        System.out.print(this.difference(this.getPrevious()));
-        System.out.print("--");
-    }
 
+    // Methods for working hashing [start]
     @Override
     public int hashCode() { return Arrays.deepHashCode(board); }
 
@@ -86,6 +101,8 @@ public class GameState implements Node
         GameState that = (GameState) o;
         return Arrays.deepEquals(this.board, that.board);
     }
+    // Methods for working hashing [end]
+
 
     @Override
     public Iterable<Node> neighbors()

@@ -1,20 +1,18 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class Ex1
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         String method;
         String time;
         String open;
         GameState initialState;
         GameState goalState;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt")))
+        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
+             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("output.txt")))) // Added file writer
         {
             // Read method and predicates
             method = reader.readLine();
@@ -23,28 +21,28 @@ public class Ex1
             initialState = loadState(reader);
             reader.readLine();
             goalState = loadState(reader);
+
+            // Redirect output to the file
+            writer.println("Method: " + method);
+            writer.println("Time: " + time);
+            writer.println("Open: " + open);
+            writer.println("Initial State:");
+            writer.println(initialState);
+            writer.println("Goal State:");
+            writer.println(goalState);
+
+            writer.println("Running algorithm...");
+            GameState.clearBuilds();
+            GameState solution = (GameState) new A_star().run(initialState, goalState, true, (a, _) -> a.getCost() + 1);
+
+            if (solution == null) writer.println("No solution found.");
+            assert solution != null;
+
+            writer.println("Solution: " + solution.getPath());
+            writer.println();
+            writer.println("Num: " + GameState.getBuilds());
+            writer.println("Cost: " + solution.getCost());
         }
-
-        // Printing loaded information (for demonstration purposes)
-        System.out.println("Method: " + method);
-        System.out.println("Time: " + time);
-        System.out.println("Open: " + open);
-        System.out.println("Initial State:");
-        System.out.println(initialState);
-        System.out.println("Goal State:");
-        System.out.println(goalState);
-
-        System.out.println("Running algorithm...");
-        GameState.clearBuilds();
-        GameState solution = (GameState) new A_star().run(initialState, goalState, true, (a, b) -> a.getCost() + b.getCost());
-
-        if (solution == null) System.out.println("No solution found.");
-        assert solution != null;
-
-        solution.print_path();
-        System.out.println();
-        System.out.println("Num: " + GameState.getBuilds());
-        System.out.println("Cost: " + solution.getCost());
     }
 
     private static GameState loadState(BufferedReader reader) throws IOException
