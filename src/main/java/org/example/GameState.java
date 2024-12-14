@@ -39,7 +39,7 @@ public class GameState implements Node
             }
     }
 
-
+    public char getCell(int row, int col){ return this.board[row][col]; }
     @Override
     public int getCost(){ return this.cost; }
     @Override

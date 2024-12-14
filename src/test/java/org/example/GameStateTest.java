@@ -2,24 +2,58 @@ package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameStateTest
 {
+    char[][] board1, board2;
     GameState state1, state2;
 
     @BeforeEach
     void setUp()
     {
-        this.state1 = new GameState(new char[][]{
+        assertDoesNotThrow(GameState::clearBuilds);
+
+        this.board1 = new char[][]{
                 {'G', 'G', '_'},
                 {'B', 'R', '_'},
-                {'B', 'R', '_'}});
+                {'B', 'R', '_'}};
 
-        this.state2 = new GameState(new char[][]{
+        this.board2 = new char[][]{
                 {'G', 'R', 'X'},
                 {'G', 'R', '_'},
-                {'B', 'B', 'X'}});
+                {'B', 'B', 'X'}};
+
+        assertDoesNotThrow(() -> this.state1 = new GameState(this.board1));
+        assertDoesNotThrow(() -> this.state2 = new GameState(this.board2));
+    }
+
+    @Test
+    void getBuilds()
+    {
+        assertEquals(2, GameState.getBuilds());
+    }
+
+    @Test
+    void clearBuilds()
+    {
+        assertDoesNotThrow(GameState::clearBuilds);
+        assertEquals(0, GameState.getBuilds());
+    }
+
+    @Test
+    void getCell()
+    {
+        for (int row = 0; row < GameState.size; row++)
+            for (int col = 0; col < GameState.size; col++)
+                assertEquals(this.board1[row][col], this.state1.getCell(row, col));
+
+        for (int row = 0; row < GameState.size; row++)
+            for (int col = 0; col < GameState.size; col++)
+                assertEquals(this.board2[row][col], this.state2.getCell(row, col));
     }
 
     @Test
@@ -52,6 +86,26 @@ class GameStateTest
         assertDoesNotThrow(() -> state2.setPrevious(state1));
         assertEquals(state2, state1.getPrevious());
         assertEquals(state1, state2.getPrevious());
+    }
+
+    @Test
+    void testHashCode()
+    {
+        assertEquals(Arrays.deepHashCode(this.board1), this.state1.hashCode());
+        assertEquals(Arrays.deepHashCode(this.board2), this.state2.hashCode());
+    }
+
+    @Test
+    void testEquals()
+    {
+        GameState clone1 = new GameState(this.board1);
+        GameState clone2 = new GameState(this.board2);
+
+        assertNotSame(this.state1, clone1);
+        assertNotSame(this.state2, clone2);
+
+        assertEquals(this.state1, clone1);
+        assertEquals(this.state2, clone2);
     }
 
     @Test
