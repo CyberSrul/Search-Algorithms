@@ -7,7 +7,7 @@ import java.util.function.BiFunction;
 
 
 
-public class A_star implements Algorithm
+public class Astar implements Algorithm
 {
     @Override
     public Node run(Node start, Node goal, boolean verbose, BiFunction<Node, Node, Integer> NewCost)

@@ -14,9 +14,8 @@ public class Ex1
         GameState goalState;
 
         try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
-             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("output.txt")))) // Added file writer
+             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("output.txt"))))
         {
-            // Read method and predicates
             method = reader.readLine();
             time = reader.readLine();
             open = reader.readLine();
@@ -24,7 +23,6 @@ public class Ex1
             reader.readLine();
             goalState = loadState(reader);
 
-            // Redirect output to the file
             writer.println("Method: " + method);
             writer.println("Time: " + time);
             writer.println("Open: " + open);
@@ -37,7 +35,8 @@ public class Ex1
             GameState.clearBuilds();
             BiFunction<Node, Node, Integer> newCost;
             newCost = (src, dst) -> src.getCost() + dst.getCost() - heuristic((GameState) src, goalState) + heuristic((GameState) dst, goalState);
-            GameState solution = (GameState) new A_star().run(initialState, goalState, true, newCost);
+            //newCost = (src, dst) -> src.getCost() + 1;
+            GameState solution = (GameState) new IDAstar().run(initialState, goalState, true, newCost);
 
             if (solution == null) writer.println("no path");
             assert solution != null;
