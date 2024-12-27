@@ -18,7 +18,7 @@ public class Astar implements Algorithm
 
         while (! queue.isEmpty())
         {
-            if (verbose) System.out.println(expanding.size());
+            if (verbose) System.out.println(expanding);
 
             Node next = queue.poll();
             expanding.remove(next);
@@ -29,11 +29,9 @@ public class Astar implements Algorithm
             for (Node neighbour : next.neighbors())
             {
                 if (neighbour == null) continue;
+                if (expanded.contains(neighbour) || expanding.contains((neighbour))) continue;
 
                 neighbour.setCost(NewCost.apply(next, neighbour));
-
-                if (expanded.contains(neighbour) || expanding.contains((neighbour)))
-                    if (neighbour.compareTo(next) >= 0) continue;
 
                 queue.add(neighbour); expanding.add(neighbour);
             }

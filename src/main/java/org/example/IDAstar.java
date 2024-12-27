@@ -25,7 +25,7 @@ public class IDAstar implements Algorithm
 
             for (update = Integer.MAX_VALUE; ! stack.isEmpty(); )
             {
-                if (verbose) System.out.println(expanding.size());
+                if (verbose) System.out.println(expanding);
 
                 Node next = stack.peek();
                 if (expanded.contains(next) || ! expanding.containsKey(next))
@@ -63,6 +63,7 @@ public class IDAstar implements Algorithm
                 }
             }
 
+            if (update == threshold) return null;
             if (goal.getPrevious() != null) return goal;
         }
     }

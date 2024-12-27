@@ -3,6 +3,9 @@ package org.example;
 import java.io.*;
 import java.util.function.BiFunction;
 
+
+
+
 public class Ex1
 {
     public static void main(String[] args) throws IOException
@@ -23,30 +26,39 @@ public class Ex1
             reader.readLine();
             goalState = loadState(reader);
 
-            writer.println("Method: " + method);
-            writer.println("Time: " + time);
-            writer.println("Open: " + open);
-            writer.println("Initial State:");
-            writer.println(initialState);
-            writer.println("Goal State:");
-            writer.println(goalState);
 
-            writer.println("Running algorithm...");
+            // choosing algorithm
+            Algorithm algo = switch (method)
+            {
+                case "A*", "BFS" -> new Astar();
+                case "IDA*", "DFID" -> new IDAstar();
+                case "DFBnB" -> new BnB();
+                default -> throw new IllegalArgumentException("Unknown method: " + method);
+            };
+
+            // choosing cost function
+            BiFunction<Node, Node, Integer> newCost = switch (method)
+            {
+                case "A*", "IDA*", "DFBnB" -> (src, dst) -> src.getCost() + dst.getCost() - heuristic((GameState) src, goalState) + heuristic((GameState) dst, goalState);
+                case "BFS", "DFID" -> (src, _) -> src.getCost() + 1;
+                default -> throw new IllegalArgumentException("Unknown method: " + method);
+            };
+
+
+            // executing search
             GameState.clearBuilds();
-            BiFunction<Node, Node, Integer> newCost;
-            newCost = (src, dst) -> src.getCost() + dst.getCost() - heuristic((GameState) src, goalState) + heuristic((GameState) dst, goalState);
-            //newCost = (src, dst) -> src.getCost() + 1;
-            GameState solution = (GameState) new IDAstar().run(initialState, goalState, true, newCost);
 
-            if (solution == null) writer.println("no path");
-            assert solution != null;
+            long startTime = System.nanoTime();
+            GameState solution = (GameState) algo.run(initialState, goalState, open.equals("with open"), newCost);
+            long totalTime = System.nanoTime() - startTime;
 
-            writer.println("Solution: " + solution.getPath());
-            writer.println();
+            writer.println(solution != null ? solution.getPath() : "no path");
             writer.println("Num: " + GameState.getBuilds());
-            writer.println("Cost: " + solution.getCost());
+            writer.println("Cost: " + (solution != null ? solution.getCost() : "inf"));
+            if (time.equals("with time"))writer.println(String.format("%.3f seconds", totalTime / 1e+9));
         }
     }
+
 
     private static GameState loadState(BufferedReader reader) throws IOException
     {
@@ -61,6 +73,7 @@ public class Ex1
 
         return new GameState(board);
     }
+
 
     public static int heuristic(GameState node, GameState goal)
     {

@@ -60,6 +60,7 @@ public class GameState implements Node
     {
         StringBuilder path = new StringBuilder();
         BuildPath(path);
+        path.setLength(path.length() - 2);
         return path.toString();
     }
 

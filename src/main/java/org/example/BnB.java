@@ -18,7 +18,7 @@ public class BnB implements Algorithm
 
         for (int threshold = Integer.MAX_VALUE; ! stack.isEmpty(); )
         {
-            if (verbose) System.out.println(expanding.size());
+            if (verbose) System.out.println(expanding);
 
             Node next = stack.peek();
             if (expanded.contains(next) || ! expanding.containsKey(next))
